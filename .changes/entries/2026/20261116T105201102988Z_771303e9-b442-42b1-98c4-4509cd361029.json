@@ -1,0 +1,16 @@
+{
+  "action_required": null,
+  "breaking": false,
+  "component": "codex-kit",
+  "created_at": "2026-11-16T10:52:01.102988Z",
+  "id": "771303e9-b442-42b1-98c4-4509cd361029",
+  "internal_reason": null,
+  "kind": "changed",
+  "references": [
+    "codex-kit/.agents/skills/dev-cycle/SKILL.md",
+    "codex-kit/.agents/skills/dev-docs/SKILL.md"
+  ],
+  "schema_version": 1,
+  "support": "В dev-cycle добавлена проверка актуальности закрытых пунктов и выбор незавершённого результата с готовыми зависимостями. dev-docs описывает состав пользовательской инструкции. Оба навыка и комплект прошли статическую валидацию.",
+  "user": "При возобновлении плана Codex использует актуальные результаты завершённых пунктов. Пользовательские инструкции описывают условия, шаги и ожидаемый результат."
+}
