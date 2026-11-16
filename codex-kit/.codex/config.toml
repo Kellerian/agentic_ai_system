@@ -1,0 +1,35 @@
+# Настройки основной сессии, провайдеров и разрешений остаются у пользователя.
+[agents]
+max_concurrent_threads_per_session = 3
+
+[agents.kit_explorer]
+description = "Локализует нужный код и проверки; без изменений файлов."
+config_file = "agents/kit_explorer.toml"
+
+[agents.kit_planner]
+description = "Планирует неоднозначные многошаговые изменения."
+config_file = "agents/kit_planner.toml"
+
+[agents.kit_developer]
+description = "Реализует ограниченный пакет изменений и проверяет результат."
+config_file = "agents/kit_developer.toml"
+
+[agents.kit_reviewer]
+description = "Независимо проверяет корректность и регрессии; без правок."
+config_file = "agents/kit_reviewer.toml"
+
+[agents.kit_ui_designer]
+description = "Проектирует UX, структуру экранов и визуальную систему."
+config_file = "agents/kit_ui_designer.toml"
+
+[agents.kit_ui_developer]
+description = "Реализует и проверяет web/desktop UI по дизайн-решению."
+config_file = "agents/kit_ui_developer.toml"
+
+[agents.kit_documenter]
+description = "Обновляет нужные документы по проверенным изменениям."
+config_file = "agents/kit_documenter.toml"
+
+[agents.kit_expert]
+description = "Разбирает сложную причину сбоя или спорное техническое решение."
+config_file = "agents/kit_expert.toml"

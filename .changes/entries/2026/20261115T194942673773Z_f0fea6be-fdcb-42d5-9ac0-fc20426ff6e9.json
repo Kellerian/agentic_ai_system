@@ -1,0 +1,15 @@
+{
+  "action_required": null,
+  "breaking": false,
+  "component": "UI и UX",
+  "created_at": "2026-11-15T19:49:42.673773Z",
+  "id": "f0fea6be-fdcb-42d5-9ac0-fc20426ff6e9",
+  "internal_reason": null,
+  "kind": "added",
+  "references": [
+    "docs/ui-workflow.md"
+  ],
+  "schema_version": 1,
+  "support": "Зарегистрированы kit_ui_designer (gpt-6.1-sol/medium) и kit_ui_developer (gpt-6.1-terra/medium), условный UI-workflow и правило ux-ui. Общий reviewer и лимит двух пишущих агентов сохранены. Валидатор, 11 тестов комплекта и пять навыков прошли; отсутствие UI-ролей сначала подтверждено падающим тестом. Реальный UI DMC и эффективность моделей не проверялись.",
+  "user": "Добавлены отдельные роли проектирования UX/UI и реализации интерфейсов с учётом стиля проекта, доступности и проверки пользовательских сценариев."
+}

@@ -1,0 +1,15 @@
+{
+  "base_commit": null,
+  "date": "2026-11-14",
+  "draft": true,
+  "entries": [
+    {
+      "file": ".changes/entries/2026/20261114T202606737317Z_f8e6e573-da48-4901-b345-a0697d0f5e84.json",
+      "id": "f8e6e573-da48-4901-b345-a0697d0f5e84",
+      "sha256": "53fa33afef7870b05bc09cddd8e4d308250a5aedb84ff2878dd0d54ddce06d8d"
+    }
+  ],
+  "release": "Пример комплекта Codex",
+  "schema_version": 1,
+  "source_commit": null
+}

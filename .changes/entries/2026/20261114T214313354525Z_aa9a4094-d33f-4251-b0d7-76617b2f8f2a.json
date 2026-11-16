@@ -1,0 +1,15 @@
+{
+  "action_required": null,
+  "breaking": false,
+  "component": "Git-workflow",
+  "created_at": "2026-11-14T21:43:13.354525Z",
+  "id": "aa9a4094-d33f-4251-b0d7-76617b2f8f2a",
+  "internal_reason": null,
+  "kind": "added",
+  "references": [
+    "codex-kit/.agents/skills/git-workflow/SKILL.md"
+  ],
+  "schema_version": 1,
+  "support": "Baseline перенесён из dev-cycle в git-workflow; AGENTS задаёт владельца и маршрут чтения. Уточнены общий индекс, refs между worktree, оформление коммита и сохранение истории при переносе. Роли и модели не менялись; проверяется наличие пятого навыка. Git-операции над рабочими проектами не выполнялись.",
+  "user": "Добавлен Git-workflow с единым владельцем Git-операций, сохранением чужих изменений и проверкой результата интеграции без отдельного агента."
+}
