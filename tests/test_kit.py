@@ -73,6 +73,10 @@ class KitValidationTests(unittest.TestCase):
         (self.root / ".agents/skills/git-workflow/SKILL.md").unlink()
         self.assertIn("Missing skill: git-workflow", validator.validate(self.root))
 
+    def test_missing_plan_validator_is_rejected(self):
+        (self.root / ".codex/scripts/plans.py").unlink()
+        self.assertIn("Missing: .codex/scripts/plans.py", validator.validate(self.root))
+
     def test_lost_rule_routes_after_merge_are_rejected(self):
         (self.root / "AGENTS.md").write_text("# Existing project guidance\n", encoding="utf-8")
         self.assertTrue(any("Rule not linked" in e for e in validator.validate(self.root)))

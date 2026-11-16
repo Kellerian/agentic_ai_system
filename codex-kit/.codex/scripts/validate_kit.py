@@ -28,7 +28,7 @@ def validate(root: Path, models_cache: Path | None = None) -> list[str]:
             errors.append(f"{path.relative_to(root)}: {exc}")
 
     for relative in ("AGENTS.md", ".codex/project.md", ".codex/config.toml",
-                     ".changes/README.md", ".codex/scripts/changes.py"):
+                     ".changes/README.md", ".codex/scripts/changes.py", ".codex/scripts/plans.py"):
         if not (root / relative).is_file():
             errors.append(f"Missing: {relative}")
 

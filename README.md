@@ -9,6 +9,7 @@
 TDD, Git и UI, а также отдельные записи изменений для сборки журнала выпуска.
 
 - [Короткая инструкция по переносу и первой проверке](docs/quick-start.md)
+- [Формат планов, статусы и проверка прогресса](codex-kit/.agents/skills/dev-plan/references/lifecycle.md)
 - [Разбор эффективности и принятые решения](docs/efficiency-review.md)
 - [Итоговый аудит согласованности и объёма](docs/kit-audit.md)
 - [Повторный аудит TDD, Git и UI](docs/pipeline-audit-2026-11-15.md)
