@@ -95,6 +95,52 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertIsNone(result["progress"]["percent"])
 
+    def test_malformed_task_cannot_disappear_from_completed_plan(self):
+        for heading in ("## Задачи", "## Задачи <!-- milestone -->"):
+            with self.subTest(heading=heading):
+                tasks = heading + "\n" + task("T01", "done", extra="Результат: verified") + task("t02")
+                code, result = self.run_plan(plan(tasks, "completed"))
+                self.assertEqual(1, code)
+                self.assertTrue(any("t02" in e for e in result["errors"]))
+
+    def test_wrong_heading_level_cannot_hide_an_unfinished_task(self):
+        for hashes in ("#", "##", "####", "#####", "######"):
+            with self.subTest(hashes=hashes):
+                done = task("T01", "done", extra="Результат: verified")
+                todo = task("T02", deps="T01").replace("### T02", hashes + " T02")
+                code, result = self.run_plan(plan("## Задачи\n" + done + todo, "completed"))
+                self.assertEqual(1, code)
+                self.assertEqual("invalid", result["status"])
+                self.assertTrue(any("T02" in e and "###" in e for e in result["errors"]))
+                self.assertEqual({"done": 1, "total": 2, "percent": 50.0}, result["progress"])
+
+    def test_subheadings_and_task_examples_are_not_tasks(self):
+        notes = "\n#### Проверки\n```md\n## T02 — Пример\n```\n<!-- # T03 — Пример -->"
+        code, result = self.run_plan(plan(task("T01", "done", extra=notes + "\nРезультат: verified"), "completed"))
+        self.assertEqual(0, code)
+        self.assertEqual(1, result["progress"]["total"])
+
+    def test_comment_marker_in_example_cannot_hide_real_task(self):
+        tasks = task("T01", "done", extra="Результат: verified") + "\n```html\n<!--\n```\n"
+        tasks += task("T02") + "\n<!-- another comment -->\n"
+        code, result = self.run_plan(plan(tasks, "completed"))
+        self.assertEqual(1, code)
+        self.assertEqual(2, result["progress"]["total"])
+
+    def test_comment_marker_in_inline_code_cannot_hide_real_task(self):
+        for ticks in ("`", "``"):
+            tasks = task("T01", "done", extra="Результат: verified")
+            tasks += f"Markdown example: {ticks}<!--{ticks}\n" + task("T02")
+            code, result = self.run_plan(plan(tasks, "completed"))
+            self.assertEqual(1, code)
+            self.assertEqual(2, result["progress"]["total"])
+
+    def test_ready_plan_must_have_work_that_can_start(self):
+        tasks = task("T01", "blocked", extra="Блокер: access\nРазблокировка: grant access")
+        code, result = self.run_plan(plan(tasks, "ready"))
+        self.assertEqual(1, code)
+        self.assertTrue(any("ready" in e for e in result["errors"]))
+
     def test_blocking_and_pause(self):
         tasks = task("T01", "blocked", extra="Блокер: access\nРазблокировка: grant access")
         self.assertEqual(0, self.run_plan(plan(tasks, "blocked", "Блокер: access\nРазблокировка: grant access"))[0])
@@ -127,6 +173,21 @@ class PlanTests(unittest.TestCase):
     def test_draft_can_be_empty_but_ready_cannot(self):
         self.assertEqual(0, self.run_plan(plan("", "draft"))[0])
         self.assertEqual(1, self.run_plan(plan("", "ready"))[0])
+
+    def test_shared_task_title_is_advisory_during_planning(self):
+        tasks = task("T01") + task("T02").replace("Result", "RESULT") + task("T03").replace("Result", "Ship")
+        for state in ("draft", "ready"):
+            code, result = self.run_plan(plan(tasks, state))
+            self.assertEqual(0, code)
+            self.assertEqual(["T01", "T02", "T03"], result["ready"])
+            self.assertEqual(1, len(result["warnings"]))
+            self.assertIn("T01, T02", result["warnings"][0])
+            self.assertNotIn("T03", result["warnings"][0])
+        self.assertEqual([], self.run_plan(plan(tasks, "in_progress"))[1]["warnings"])
+
+    def test_cancelled_task_does_not_trigger_simplification(self):
+        tasks = task("T01") + task("T02", "cancelled", extra="Причина: replaced")
+        self.assertEqual([], self.run_plan(plan(tasks, "ready"))[1]["warnings"])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,29 @@
+name: Validate Codex kit
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate portable kit
+        run: python3 codex-kit/.codex/scripts/validate_kit.py
+      - name: Run regression tests
+        run: python3 -m unittest discover -s tests -q
+      - name: Validate change history
+        run: python3 codex-kit/.codex/scripts/changes.py check
+      - name: Check change entries against base
+        if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python3 codex-kit/.codex/scripts/changes.py check --base "$BASE_SHA" --head HEAD --require-entry

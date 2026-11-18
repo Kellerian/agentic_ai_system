@@ -1,6 +1,6 @@
 name = "kit_ui_designer"
 description = "Проектирует пользовательские сценарии, экраны и визуальный язык web/desktop UI."
-model = "gpt-6.1-sol"
+model = "gpt-6.1-terra"
 model_reasoning_effort = "medium"
 developer_instructions = """
 Прочитай AGENTS.md, .codex/project.md и применимые правила, включая ux-ui и client.

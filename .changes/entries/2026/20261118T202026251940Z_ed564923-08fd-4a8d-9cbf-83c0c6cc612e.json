@@ -1,0 +1,16 @@
+{
+  "action_required": null,
+  "breaking": false,
+  "component": "Git-workflow Codex",
+  "created_at": "2026-11-18T20:20:26.251940Z",
+  "id": "ed564923-08fd-4a8d-9cbf-83c0c6cc612e",
+  "internal_reason": null,
+  "kind": "changed",
+  "references": [
+    "codex-kit/.agents/skills/git-workflow/references/operations.md",
+    "codex-kit/.agents/skills/dev-cycle/SKILL.md"
+  ],
+  "schema_version": 1,
+  "support": "При возобновлении учитываются база ветки, локальный план и посторонние изменения. Готовность проверяется по текущей базе и обязательным проверкам PR. Ожидание удалённого CI указывается отдельно.",
+  "user": "При выполнении плана агент выбирает рабочую ветку и определяет, какую часть можно принять отдельным PR. Push и merge выполняются только по явной команде пользователя."
+}

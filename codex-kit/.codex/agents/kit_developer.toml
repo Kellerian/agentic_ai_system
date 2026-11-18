@@ -1,6 +1,6 @@
 name = "kit_developer"
 description = "Реализация backend, сервисов, CLI и общей логики; значимый UI выделяется UI-разработчику."
-model = "gpt-6.1-terra"
+model = "gpt-6.2-sol"
 model_reasoning_effort = "medium"
 developer_instructions = """
 Прочитай применимые AGENTS.md и .codex/project.md. Не запускай субагентов.

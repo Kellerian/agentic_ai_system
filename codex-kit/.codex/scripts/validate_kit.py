@@ -22,6 +22,9 @@ def validate(root: Path, models_cache: Path | None = None) -> list[str]:
     errors: list[str] = []
     parsed: dict[Path, dict] = {}
     for path in sorted((root / ".codex").rglob("*.toml")):
+        if not path.resolve().is_relative_to(root / ".codex"):
+            errors.append(f"{path.relative_to(root)}: escapes .codex")
+            continue
         try:
             parsed[path] = tomllib.loads(path.read_text(encoding="utf-8-sig"))
         except (OSError, ValueError) as exc:
@@ -60,23 +63,22 @@ def validate(root: Path, models_cache: Path | None = None) -> list[str]:
         except (OSError, ValueError, KeyError, TypeError) as exc:
             errors.append(f"Cannot read model cache: {exc}")
 
+    role_dir = root / ".codex/agents"
+    seen_roles = set()
+    for path, spec in parsed.items():
+        name = spec.get("name")
+        if path.parent == role_dir and isinstance(name, str) and name in ROLES:
+            if name in seen_roles:
+                errors.append(f"{name}: duplicate agent name in {path.name}")
+            seen_roles.add(name)
+
     for role in sorted(ROLES):
-        declaration = agents.get(role, {})
-        if not isinstance(declaration, dict):
-            errors.append(f"{role}: registration must be a table")
-            continue
-        relative = declaration.get("config_file")
-        if not isinstance(relative, str) or not relative:
-            errors.append(f"{role}: missing config_file registration")
-            continue
-        # Check POSIX and Windows absolute paths even when validation runs on another OS.
-        if Path(relative).is_absolute() or re.match(r"^[A-Za-z]:|^\\\\", relative):
-            errors.append(f"{role}: config_file must be relative")
-            continue
-        path = (root / ".codex" / relative).resolve()
-        if not path.is_relative_to(root / ".codex/agents"):
-            errors.append(f"{role}: config_file escapes .codex/agents")
-            continue
+        path = role_dir / f"{role}.toml"
+        if role in agents:  # Earlier kit versions also declared each role in config.toml.
+            declaration = agents[role]
+            relative = declaration.get("config_file") if isinstance(declaration, dict) else None
+            if relative != f"agents/{role}.toml":
+                errors.append(f"{role}: legacy config_file escapes or differs from the kit role path")
         spec = parsed.get(path)
         if spec is None:
             errors.append(f"{role}: missing or invalid agent file")
@@ -126,7 +128,8 @@ def validate(root: Path, models_cache: Path | None = None) -> list[str]:
             resolved = (path.parent / target.split("#", 1)[0]).resolve()
             if not resolved.is_relative_to(root) or not resolved.exists():
                 errors.append(f"{path.relative_to(root)}: broken/escaping link {target}")
-        if ".cursor/" in text or re.search(r"[A-Za-z]:[\\/]", text):
+        project_context = path == root / ".codex/project.md"
+        if ".cursor/" in text or (not project_context and re.search(r"[A-Za-z]:[\\/]", text)):
             errors.append(f"{path.relative_to(root)}: nonportable project dependency")
     return errors
 
