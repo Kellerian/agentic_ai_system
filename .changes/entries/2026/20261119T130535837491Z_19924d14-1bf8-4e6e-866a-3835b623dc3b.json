@@ -1,0 +1,16 @@
+{
+  "action_required": null,
+  "breaking": false,
+  "component": "Проверка планов Codex",
+  "created_at": "2026-11-19T13:05:35.837491Z",
+  "id": "19924d14-1bf8-4e6e-866a-3835b623dc3b",
+  "internal_reason": null,
+  "kind": "added",
+  "references": [
+    "codex-kit/.codex/hooks.json",
+    "codex-kit/.agents/skills/dev-plan/references/lifecycle.md"
+  ],
+  "schema_version": 1,
+  "support": "Локальный PostToolUse возвращает статус, диагностику и отпечаток для успешной проверки. При передаче работы проверяется совпадение пути, содержимого плана и версии валидатора. Если хук отключён, не получил доверия или запись выполнена другим способом, агент запускает plans.py самостоятельно.",
+  "user": "После изменения Markdown-плана через apply_patch Codex автоматически проверяет его. Для уже проверенной версии повторный запуск не нужен."
+}

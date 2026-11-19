@@ -16,6 +16,18 @@ ROLES = {"kit_explorer", "kit_planner", "kit_developer", "kit_reviewer", "kit_do
 RULES = {"engineering", "contracts", "distributed", "data", "security", "operations", "client", "history", "performance", "ux-ui"}
 
 
+def has_plan_hook(groups: list) -> bool:
+    for group in groups:
+        for hook in group.get("hooks", []):
+            command = hook.get("command", "")
+            windows = hook.get("commandWindows", command)
+            if hook.get("type") == "command" and "plan_hook.py" in command and "plan_hook.py" in windows:
+                matcher = group.get("matcher")
+                if matcher in (None, "", "*") or any(re.search(matcher, name) for name in ("apply_patch", "Edit", "Write")):
+                    return True
+    return False
+
+
 def validate(root: Path, models_cache: Path | None = None) -> list[str]:
     """Check package coherence, local references and optional model compatibility."""
     root = root.resolve()
@@ -31,9 +43,20 @@ def validate(root: Path, models_cache: Path | None = None) -> list[str]:
             errors.append(f"{path.relative_to(root)}: {exc}")
 
     for relative in ("AGENTS.md", ".codex/project.md", ".codex/config.toml",
-                     ".changes/README.md", ".codex/scripts/changes.py", ".codex/scripts/plans.py"):
+                     ".changes/README.md", ".codex/scripts/changes.py", ".codex/scripts/plans.py",
+                     ".codex/scripts/plan_hook.py", ".codex/hooks.json"):
         if not (root / relative).is_file():
             errors.append(f"Missing: {relative}")
+
+    hook_file = root / ".codex/hooks.json"
+    if hook_file.is_file():
+        try:
+            hook_config = json.loads(hook_file.read_text(encoding="utf-8-sig"))
+            post_tool = hook_config["hooks"]["PostToolUse"]
+            if not isinstance(post_tool, list) or not has_plan_hook(post_tool):
+                raise ValueError("missing PostToolUse command for apply_patch and plan_hook.py")
+        except (OSError, ValueError, KeyError, TypeError, AttributeError, re.error) as exc:
+            errors.append(f".codex/hooks.json: {exc}")
 
     guidance = root / "AGENTS.md"
     routed = set()

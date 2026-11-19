@@ -108,6 +108,27 @@ class KitValidationTests(unittest.TestCase):
         (self.root / ".codex/scripts/plans.py").unlink()
         self.assertIn("Missing: .codex/scripts/plans.py", validator.validate(self.root))
 
+    def test_incomplete_hook_installation_is_reported(self):
+        (self.root / ".codex/scripts/plan_hook.py").unlink()
+        (self.root / ".codex/hooks.json").write_text("{", encoding="utf-8")
+        errors = validator.validate(self.root)
+        self.assertIn("Missing: .codex/scripts/plan_hook.py", errors)
+        self.assertTrue(any("hooks.json" in error for error in errors))
+
+    def test_unrelated_post_tool_handler_cannot_replace_kit_hook(self):
+        config = {"hooks": {"PostToolUse": [{"matcher": "^Bash$", "hooks": [
+            {"type": "command", "command": "python another_hook.py"}]}]}}
+        (self.root / ".codex/hooks.json").write_text(json.dumps(config), encoding="utf-8")
+        self.assertTrue(any("plan_hook.py" in error for error in validator.validate(self.root)))
+
+    def test_merged_hook_config_accepts_existing_wildcard(self):
+        path = self.root / ".codex/hooks.json"
+        config = json.loads(path.read_text(encoding="utf-8"))
+        groups = config["hooks"]["PostToolUse"]
+        groups.insert(0, {"matcher": "*", "hooks": [{"type": "command", "command": "another_hook"}]})
+        path.write_text(json.dumps(config), encoding="utf-8")
+        self.assertEqual([], validator.validate(self.root))
+
     def test_lost_rule_routes_after_merge_are_rejected(self):
         (self.root / "AGENTS.md").write_text("# Existing project guidance\n", encoding="utf-8")
         self.assertTrue(any("Rule not linked" in e for e in validator.validate(self.root)))
